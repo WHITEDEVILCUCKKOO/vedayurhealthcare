@@ -174,7 +174,7 @@ if (
              <div class="field">
                  <label for="enqPhone">Phone Number <span class="required-star">*</span></label>
                  <input type="tel" id="enqPhone" name="phone" placeholder="10-digit Phone Number"
-                     autocomplete="tel" inputmode="numeric" maxlength="10" required
+                     autocomplete="tel" inputmode="numeric" maxlength="14" required
                      value="<?= htmlspecialchars($enqPhoneX91, ENT_QUOTES, 'UTF-8') ?>">
                  <small class="error-message" id="phoneError"></small>
              </div>
