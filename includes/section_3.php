@@ -1,493 +1,277 @@
+ <!-- Section 3: Enquiry -->
+
 <?php
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-/* =====================================================
- * FORM HANDLING
- * ===================================================== */
 $enqErrorsX91 = [];
 $enqSuccessX91 = '';
 
-$enqNameX91 = '';
-$enqPhoneX91 = '';
-$enqAreaX91 = '';
-$enqPincodeX91 = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_enquiry_x91'])) {
 
-if (empty($_SESSION['enq_csrf_x91'])) {
-    $_SESSION['enq_csrf_x91'] = bin2hex(random_bytes(32));
-}
-
-if (
-    ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' &&
-    isset($_POST['enquiry_submit_x91'])
-) {
-    $tokenX91 = $_POST['enq_csrf_x91'] ?? '';
-
-    if (
-        !is_string($tokenX91) ||
-        !hash_equals($_SESSION['enq_csrf_x91'], $tokenX91)
-    ) {
-        $enqErrorsX91['general'] =
-            'Invalid request. Please refresh the page and try again.';
-    }
-
-    $enqNameX91 = trim((string) ($_POST['name'] ?? ''));
-    $enqPhoneX91 = trim((string) ($_POST['phone'] ?? ''));
-    $enqAreaX91 = trim((string) ($_POST['area'] ?? ''));
-    $enqPincodeX91 = trim((string) ($_POST['pincode'] ?? ''));
+    $enqNameX91    = trim($_POST['name'] ?? '');
+    $enqPhoneX91   = trim($_POST['phone'] ?? '');
+    $enqAreaX91    = trim($_POST['area'] ?? '');
+    $enqPincodeX91 = trim($_POST['pincode'] ?? '');
 
     // Name validation
-    if ($enqNameX91 === '') {
-        $enqErrorsX91['name'] = 'Please enter your name.';
-    } elseif (
-        mb_strlen($enqNameX91, 'UTF-8') > 80 ||
-        !preg_match(
-            "/^[\p{L}\p{M}]+(?:[ '\x{2019}.-][\p{L}\p{M}]+)*$/u",
-            $enqNameX91
-        )
+    if (
+        !preg_match("/^[\p{L}][\p{L}\s.'-]{1,79}$/u", $enqNameX91)
     ) {
-        $enqErrorsX91['name'] = 'Please enter a valid name.';
+        $enqErrorsX91[] = 'Please enter a valid name.';
     }
 
     // Indian mobile number validation
     if (!preg_match('/^[6-9][0-9]{9}$/', $enqPhoneX91)) {
-        $enqErrorsX91['phone'] =
-            'Enter a valid 10-digit Indian mobile number.';
+        $enqErrorsX91[] = 'Please enter a valid 10-digit mobile number.';
     }
 
-    // Area / city validation
-    if ($enqAreaX91 === '') {
-        $enqErrorsX91['area'] = 'Please enter your area or city.';
-    } elseif (
-        mb_strlen($enqAreaX91, 'UTF-8') > 100 ||
-        !preg_match(
-            "/^[\p{L}\p{M}0-9]+(?:[ \-.,'\/][\p{L}\p{M}0-9]+)*$/u",
-            $enqAreaX91
-        )
+    // Area validation
+    if (
+        $enqAreaX91 === '' ||
+        mb_strlen($enqAreaX91) > 100
     ) {
-        $enqErrorsX91['area'] =
-            'Please enter a valid area or city.';
+        $enqErrorsX91[] = 'Please enter a valid area or city.';
     }
 
-    // Indian PIN code validation
+    // Pincode validation
     if (!preg_match('/^[1-9][0-9]{5}$/', $enqPincodeX91)) {
-        $enqErrorsX91['pincode'] =
-            'Enter a valid 6-digit PIN code.';
+        $enqErrorsX91[] = 'Please enter a valid 6-digit pincode.';
     }
 
-    // Send email only when validation passes
     if (empty($enqErrorsX91)) {
 
-        // YAHAN APNA GMAIL DAALO (enquiry isi par aayegi)
+        // Replace with your actual receiving email
         $recipientX91 = 'abhiweb.69@gmail.com';
 
         $subjectX91 = 'New Enquiry - Vedayur Healthcare';
 
-        $messageX91 =
-            "New enquiry received from Vedayur Healthcare website.\n\n" .
-            "Name: " . $enqNameX91 . "\n" .
-            "Phone: " . $enqPhoneX91 . "\n" .
-            "Area / City: " . $enqAreaX91 . "\n" .
-            "Pincode: " . $enqPincodeX91 . "\n" .
-            "Date: " . date('d-m-Y h:i A') . "\n";
+        $timeX91 = date('d-m-Y h:i:s A');
 
-        // Sender email: automatically aapke website ke domain se banegi
-        $hostX91 = strtolower((string) ($_SERVER['HTTP_HOST'] ?? 'localhost'));
-        $hostX91 = preg_replace('/:\d+$/', '', $hostX91);
-        $hostX91 = preg_replace('/^www\./', '', $hostX91);
-        $hostX91 = preg_replace('/[^a-z0-9.\-]/', '', $hostX91);
-        $senderEmailX91 = 'noreply@' . $hostX91;
+        $messageX91  = "New Enquiry Received - Vedayur Healthcare\n\n";
+        $messageX91 .= "Date & Time: " . $timeX91 . "\n";
+        $messageX91 .= "Name: " . $enqNameX91 . "\n";
+        $messageX91 .= "Phone: " . $enqPhoneX91 . "\n";
+        $messageX91 .= "Area / City: " . $enqAreaX91 . "\n";
+        $messageX91 .= "Pincode: " . $enqPincodeX91 . "\n";
 
-        $encodedSubjectX91 = '=?UTF-8?B?' . base64_encode($subjectX91) . '?=';
+        // Use a real domain email address
+        $fromEmailX91 = 'no-reply@yourdomain.com';
 
-        $headersX91  = 'From: Vedayur Healthcare <' . $senderEmailX91 . ">\r\n";
+        $headersX91  = "From: Vedayur Healthcare <" . $fromEmailX91 . ">\r\n";
+        $headersX91 .= "Reply-To: " . $fromEmailX91 . "\r\n";
         $headersX91 .= "MIME-Version: 1.0\r\n";
         $headersX91 .= "Content-Type: text/plain; charset=UTF-8\r\n";
-        $headersX91 .= 'X-Mailer: PHP/' . phpversion();
 
-        $mailResultX91 = false;
+        if (mail($recipientX91, $subjectX91, $messageX91, $headersX91)) {
 
-        try {
-            // Pehle envelope sender (-f) ke saath try karo
-            $mailResultX91 = @mail(
-                $recipientX91,
-                $encodedSubjectX91,
-                $messageX91,
-                $headersX91,
-                '-f' . $senderEmailX91
-            );
-
-            // Agar hosting -f allow nahi karti to bina -f ke try karo
-            if ($mailResultX91 !== true) {
-                $mailResultX91 = @mail(
-                    $recipientX91,
-                    $encodedSubjectX91,
-                    $messageX91,
-                    $headersX91
-                );
-            }
-        } catch (Throwable $mailExceptionX91) {
-            error_log('Vedayur enquiry mail exception: ' . $mailExceptionX91->getMessage());
-        }
-
-        if ($mailResultX91 === true) {
-            error_log('Vedayur enquiry: mail() accepted the message for ' . $recipientX91);
-
-            $enqSuccessX91 =
-                'Thank you! Your enquiry has been submitted successfully.';
-
-            // Generate a fresh token after successful submission
-            $_SESSION['enq_csrf_x91'] = bin2hex(random_bytes(32));
-
-            $enqNameX91 = '';
-            $enqPhoneX91 = '';
-            $enqAreaX91 = '';
-            $enqPincodeX91 = '';
+            echo "<script>
+                alert('Thank you! Your enquiry has been sent successfully.');
+                window.location.href = window.location.pathname + '#enquiry';
+            </script>";
+            exit;
 
         } else {
-            error_log('Vedayur enquiry: mail() returned FALSE. Check hosting mail configuration.');
-
-            $enqErrorsX91['general'] =
-                'Sorry, your enquiry could not be sent. Please try again later.';
+            $enqErrorsX91[] = 'Email could not be sent. Please try again later.';
         }
     }
 }
 ?>
 
-<style>
-    .enq-server-success-x91,
-    .enq-server-error-x91 {
-        padding: 12px 15px;
-        margin-bottom: 16px;
-        border-radius: 6px;
-        font-size: 14px;
-        line-height: 1.5;
-    }
 
-    .enq-server-success-x91 {
-        color: #166534;
-        background: #f0fdf4;
-        border: 1px solid #bbf7d0;
-    }
+ <style>
+     /* Enquiry Form Validation - X91 */
+     .enquiry-form .field {
+         position: relative;
+     }
 
-    .enq-server-error-x91 {
-        color: #b91c1c;
-        background: #fef2f2;
-        border: 1px solid #fecaca;
-    }
+     .enquiry-form .field input {
+         width: 100%;
+         box-sizing: border-box;
+         transition: none;
+     }
 
-    .enquiry-form .error-message {
-        display: block;
-        color: #dc2626;
-        font-size: 12px;
-        margin-top: 5px;
-    }
-</style>
+     .enquiry-form .field input:focus {
+         outline: none;
+         border-color: #1B3D7B;
+     }
 
-<!-- Section 3: Enquiry -->
-<section class="enquiry-highlight" id="enquiry">
-    <div class="enquiry-inner">
+     .enquiry-form .field input[style*="220, 38, 38"] {
+         border-color: #dc2626 !important;
+     }
 
-        <div class="enquiry-copy">
-            <span class="enquiry-kicker">QUICK ENQUIRY</span>
-            <h2>Get in Touch With Vedayur Healthcare</h2>
-            <p>
-                Share your details and our team will contact you
-                for product information and guidance.
-            </p>
-        </div>
+     .enquiry-form .error-message {
+         display: block;
+         min-height: 0;
+         margin-top: 5px;
+         color: #dc2626;
+         font-size: 13px;
+         line-height: 1.5;
+         font-weight: 500;
+     }
 
-        <form
-            class="enquiry-form"
-            id="enquiryForm"
-            method="POST"
-            action="#enquiry"
-            accept-charset="UTF-8"
-            novalidate
-        >
+     .enquiry-form .error-message:empty {
+         display: none;
+         margin: 0;
+     }
 
-            <input
-                type="hidden"
-                name="enq_csrf_x91"
-                value="<?= htmlspecialchars(
-                    $_SESSION['enq_csrf_x91'],
-                    ENT_QUOTES,
-                    'UTF-8'
-                ) ?>"
-            >
+     .enquiry-form .required-star {
+         color: #dc2626;
+     }
 
-            <input
-                type="hidden"
-                name="enquiry_submit_x91"
-                value="1"
-            >
+     .enquiry-form .field input {
+         border-radius: 8px;
+     }
 
-            <?php if ($enqSuccessX91 !== ''): ?>
-                <div class="enq-server-success-x91" role="status">
-                    <?= htmlspecialchars(
-                        $enqSuccessX91,
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>
-                </div>
-            <?php endif; ?>
+     .enquiry-form .field input:focus-visible {
+         outline: 2px solid rgba(27, 61, 123, 0.15);
+         outline-offset: 2px;
+     }
+ </style>
+ <section class="enquiry-highlight" id="enquiry">
+     <div class="enquiry-inner">
 
-            <?php if (!empty($enqErrorsX91['general'])): ?>
-                <div class="enq-server-error-x91" role="alert">
-                    <?= htmlspecialchars(
-                        $enqErrorsX91['general'],
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>
-                </div>
-            <?php endif; ?>
+         <div class="enquiry-copy">
+             <span class="enquiry-kicker">QUICK ENQUIRY</span>
+             <h2>Get in Touch With Vedayur Healthcare</h2>
+             <p>Share your details and our team will contact you for product information and guidance.</p>
+         </div>
 
-            <div class="field">
-                <label for="enqName">
-                    Name <span class="required-star">*</span>
-                </label>
+         <?php if (!empty($enqErrorsX91)): ?>
+             <div class="enquiry-server-errors-x91" role="alert">
+                 <?php foreach ($enqErrorsX91 as $errorX91): ?>
+                     <p><?= htmlspecialchars($errorX91, ENT_QUOTES, 'UTF-8') ?></p>
+                 <?php endforeach; ?>
+             </div>
+         <?php endif; ?>
 
-                <input
-                    type="text"
-                    id="enqName"
-                    name="name"
-                    placeholder="Your Name"
-                    autocomplete="name"
-                    maxlength="80"
-                    required
-                    value="<?= htmlspecialchars(
-                        $enqNameX91,
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>"
-                >
+         <form class="enquiry-form" id="enquiryForm" method="POST" novalidate>
 
-                <small class="error-message" id="nameError"><?= htmlspecialchars(
-                    $enqErrorsX91['name'] ?? '',
-                    ENT_QUOTES,
-                    'UTF-8'
-                ) ?></small>
-            </div>
+             <div class="field">
+                 <label for="enqName">Name <span class="required-star">*</span></label>
+                 <input type="text" id="enqName" name="name" placeholder="Your Name" autocomplete="name"
+                     maxlength="80" required>
+                 <small class="error-message" id="nameError"></small>
+             </div>
 
-            <div class="field">
-                <label for="enqPhone">
-                    Phone Number <span class="required-star">*</span>
-                </label>
+             <div class="field">
+                 <label for="enqPhone">Phone Number <span class="required-star">*</span></label>
+                 <input type="tel" id="enqPhone" name="phone" placeholder="10-digit Phone Number"
+                     autocomplete="tel" inputmode="numeric" maxlength="10" required>
+                 <small class="error-message" id="phoneError"></small>
+             </div>
 
-                <input
-                    type="tel"
-                    id="enqPhone"
-                    name="phone"
-                    placeholder="10-digit Phone Number"
-                    autocomplete="tel"
-                    inputmode="numeric"
-                    maxlength="10"
-                    required
-                    value="<?= htmlspecialchars(
-                        $enqPhoneX91,
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>"
-                >
+             <div class="field">
+                 <label for="enqArea">Area <span class="required-star">*</span></label>
+                 <input type="text" id="enqArea" name="area" placeholder="Your Area / City"
+                     autocomplete="address-level2" maxlength="100" required>
+                 <small class="error-message" id="areaError"></small>
+             </div>
 
-                <small class="error-message" id="phoneError"><?= htmlspecialchars(
-                    $enqErrorsX91['phone'] ?? '',
-                    ENT_QUOTES,
-                    'UTF-8'
-                ) ?></small>
-            </div>
+             <div class="field">
+                 <label for="enqPincode">Pincode <span class="required-star">*</span></label>
+                 <input type="text" id="enqPincode" name="pincode" placeholder="6-digit Pincode"
+                     autocomplete="postal-code" inputmode="numeric" maxlength="6" required>
+                 <small class="error-message" id="pincodeError"></small>
+             </div>
 
-            <div class="field">
-                <label for="enqArea">
-                    Area <span class="required-star">*</span>
-                </label>
+             <button class="submit" id="enquirySubmit"
+                 type="submit" name="submit_enquiry_x91">
+                 ➤ Submit Enquiry
+             </button>
 
-                <input
-                    type="text"
-                    id="enqArea"
-                    name="area"
-                    placeholder="Your Area / City"
-                    autocomplete="address-level2"
-                    maxlength="100"
-                    required
-                    value="<?= htmlspecialchars(
-                        $enqAreaX91,
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>"
-                >
+             <div class="safe">
+                 🔒 Your information is safe with us.
+             </div>
 
-                <small class="error-message" id="areaError"><?= htmlspecialchars(
-                    $enqErrorsX91['area'] ?? '',
-                    ENT_QUOTES,
-                    'UTF-8'
-                ) ?></small>
-            </div>
+         </form>
+     </div>
+ </section>
 
-            <div class="field">
-                <label for="enqPincode">
-                    Pincode <span class="required-star">*</span>
-                </label>
 
-                <input
-                    type="text"
-                    id="enqPincode"
-                    name="pincode"
-                    placeholder="6-digit Pincode"
-                    autocomplete="postal-code"
-                    inputmode="numeric"
-                    maxlength="6"
-                    required
-                    value="<?= htmlspecialchars(
-                        $enqPincodeX91,
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>"
-                >
 
-                <small class="error-message" id="pincodeError"><?= htmlspecialchars(
-                    $enqErrorsX91['pincode'] ?? '',
-                    ENT_QUOTES,
-                    'UTF-8'
-                ) ?></small>
-            </div>
+ <script>
+     document.addEventListener("DOMContentLoaded", function() {
 
-            <button class="submit" id="enquirySubmit" type="submit">
-                ➤ Submit Enquiry
-            </button>
+         const enquiryFormX91 = document.getElementById("enquiryForm");
 
-            <div class="safe">
-                🔒 Your information is safe with us.
-            </div>
+         if (!enquiryFormX91) return;
 
-        </form>
-    </div>
-</section>
+         const nameX91 = document.getElementById("enqName");
+         const phoneX91 = document.getElementById("enqPhone");
+         const areaX91 = document.getElementById("enqArea");
+         const pincodeX91 = document.getElementById("enqPincode");
 
-<script>
-(function () {
-    const formX91 = document.getElementById('enquiryForm');
-    if (!formX91) return;
+         const nameErrorX91 = document.getElementById("nameError");
+         const phoneErrorX91 = document.getElementById("phoneError");
+         const areaErrorX91 = document.getElementById("areaError");
+         const pincodeErrorX91 = document.getElementById("pincodeError");
 
-    const fieldsX91 = {
-        name: document.getElementById('enqName'),
-        phone: document.getElementById('enqPhone'),
-        area: document.getElementById('enqArea'),
-        pincode: document.getElementById('enqPincode')
-    };
+         function validateEnquiryX91() {
+             let isValidX91 = true;
 
-    const errorsX91 = {
-        name: document.getElementById('nameError'),
-        phone: document.getElementById('phoneError'),
-        area: document.getElementById('areaError'),
-        pincode: document.getElementById('pincodeError')
-    };
+             nameErrorX91.textContent = "";
+             phoneErrorX91.textContent = "";
+             areaErrorX91.textContent = "";
+             pincodeErrorX91.textContent = "";
 
-    function validateFieldX91(keyX91) {
-        const valueX91 = fieldsX91[keyX91].value.trim();
-        let messageX91 = '';
+             [nameX91, phoneX91, areaX91, pincodeX91].forEach(function(fieldX91) {
+                 fieldX91.style.borderColor = "";
+             });
 
-        if (!valueX91) {
-            messageX91 = 'This field is required.';
+             const nameValueX91 = nameX91.value.trim();
+             const phoneValueX91 = phoneX91.value.trim();
+             const areaValueX91 = areaX91.value.trim();
+             const pincodeValueX91 = pincodeX91.value.trim();
 
-        } else if (keyX91 === 'name') {
-            if (
-                valueX91.length > 80 ||
-                !/^[\p{L}\p{M}]+(?:[ '\u2019.-][\p{L}\p{M}]+)*$/u.test(valueX91)
-            ) {
-                messageX91 = 'Please enter a valid name.';
-            }
+             if (!/^[\p{L}][\p{L}\s.'-]{1,79}$/u.test(nameValueX91)) {
+                 nameErrorX91.textContent = "Please enter a valid name (minimum 2 characters).";
+                 nameX91.style.borderColor = "#dc2626";
+                 isValidX91 = false;
+             }
 
-        } else if (keyX91 === 'phone') {
-            if (!/^[6-9]\d{9}$/.test(valueX91)) {
-                messageX91 = 'Enter a valid 10-digit Indian mobile number.';
-            }
+             if (!/^[6-9]\d{9}$/.test(phoneValueX91)) {
+                 phoneErrorX91.textContent = "Enter a valid 10-digit Indian mobile number.";
+                 phoneX91.style.borderColor = "#dc2626";
+                 isValidX91 = false;
+             }
 
-        } else if (keyX91 === 'area') {
-            if (
-                valueX91.length > 100 ||
-                !/^[\p{L}\p{M}0-9]+(?:[ \-.,'\/][\p{L}\p{M}0-9]+)*$/u.test(valueX91)
-            ) {
-                messageX91 = 'Please enter a valid area or city.';
-            }
+             if (!/^[\p{L}\p{N}][\p{L}\p{N}\s,.'()/-]{1,99}$/u.test(areaValueX91)) {
+                 areaErrorX91.textContent = "Please enter a valid area or city (minimum 2 characters).";
+                 areaX91.style.borderColor = "#dc2626";
+                 isValidX91 = false;
+             }
 
-        } else if (keyX91 === 'pincode') {
-            if (!/^[1-9]\d{5}$/.test(valueX91)) {
-                messageX91 = 'Enter a valid 6-digit PIN code.';
-            }
-        }
+             if (!/^[1-9][0-9]{5}$/.test(pincodeValueX91)) {
+                 pincodeErrorX91.textContent = "Enter a valid 6-digit Indian pincode.";
+                 pincodeX91.style.borderColor = "#dc2626";
+                 isValidX91 = false;
+             }
 
-        errorsX91[keyX91].textContent = messageX91;
+             return isValidX91;
+         }
 
-        fieldsX91[keyX91].setAttribute(
-            'aria-invalid',
-            messageX91 ? 'true' : 'false'
-        );
+         enquiryFormX91.addEventListener("submit", function(eventX91) {
+             if (!validateEnquiryX91()) {
+                 eventX91.preventDefault();
+             }
+         });
 
-        return messageX91 === '';
-    }
+         [nameX91, phoneX91, areaX91, pincodeX91].forEach(function(fieldX91) {
+             fieldX91.addEventListener("input", function() {
+                 validateEnquiryX91();
+             });
+         });
 
-    Object.keys(fieldsX91).forEach(function (keyX91) {
-        fieldsX91[keyX91].addEventListener('input', function () {
-            validateFieldX91(keyX91);
-        });
+         phoneX91.addEventListener("input", function() {
+             phoneX91.value = phoneX91.value.replace(/\D/g, "").slice(0, 10);
+         });
 
-        fieldsX91[keyX91].addEventListener('blur', function () {
-            validateFieldX91(keyX91);
-        });
-    });
+         pincodeX91.addEventListener("input", function() {
+             pincodeX91.value = pincodeX91.value.replace(/\D/g, "").slice(0, 6);
+         });
 
-    fieldsX91.phone.addEventListener('input', function () {
-        this.value = this.value.replace(/\D/g, '').slice(0, 10);
-    });
-
-    fieldsX91.pincode.addEventListener('input', function () {
-        this.value = this.value.replace(/\D/g, '').slice(0, 6);
-    });
-
-    /*
-     * Capture-phase listeners: ye site ki doosri scripts se PEHLE chalte hain.
-     * Isse koi aur script is form par fake "Thank you" popup nahi dikha payegi
-     * aur form asli PHP tak pahunchega.
-     */
-    window.addEventListener('click', function (eventX91) {
-        const btnX91 = eventX91.target.closest
-            ? eventX91.target.closest('#enquirySubmit')
-            : null;
-
-        if (btnX91) {
-            eventX91.stopImmediatePropagation();
-        }
-    }, true);
-
-    window.addEventListener('submit', function (eventX91) {
-        if (eventX91.target !== formX91) return;
-
-        eventX91.stopImmediatePropagation();
-        eventX91.preventDefault();
-
-        let validX91 = true;
-
-        Object.keys(fieldsX91).forEach(function (keyX91) {
-            if (!validateFieldX91(keyX91)) {
-                validX91 = false;
-            }
-        });
-
-        if (!validX91) {
-            const firstInvalidX91 = formX91.querySelector(
-                '[aria-invalid="true"]'
-            );
-
-            if (firstInvalidX91) {
-                firstInvalidX91.focus();
-            }
-            return;
-        }
-
-        // Native submit: koi submit event fire nahi hota, seedha PHP ko POST jata hai
-        HTMLFormElement.prototype.submit.call(formX91);
-    }, true);
-})();
-</script>
+     });
+ </script>
