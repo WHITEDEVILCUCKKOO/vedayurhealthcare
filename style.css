@@ -91,15 +91,16 @@ nav a:hover {
     justify-content: space-between;
     align-items: center;
     padding: 15px 30px;
-    background-color: #000000;
+    background-color: #080908;
+    /* background-color: #000000; */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     position: sticky;
-    top: 0 ;
+    top: 0;
     z-index: 9999;
 }
 
 .vhdr-brand-img {
-    height: 50px;
+    height: 83px;
     width: auto;
     display: block;
 }
@@ -202,12 +203,13 @@ nav a:hover {
     position: relative;
 
     /* Background image setup */
-    background: 
+    background:
         linear-gradient(90deg, rgba(2, 13, 6, 0.95) 0%, rgba(2, 13, 6, 0.75) 45%, rgba(2, 13, 6, 0.2) 100%),
         url("./assets/Images/1img.png");
     background-repeat: no-repeat;
     background-position: right center;
-    background-size: cover; /* Image ko stretch/crop hone se bachayega */
+    background-size: cover;
+    /* Image ko stretch/crop hone se bachayega */
 }
 
 /* Text content wrapper inside hero */
@@ -239,7 +241,7 @@ nav a:hover {
         min-height: 480px;
         padding: 50px 5%;
         /* Tablet par overlay thoda dark rakhein taaki text clear dikhe */
-        background: 
+        background:
             linear-gradient(90deg, rgba(2, 13, 6, 0.92) 0%, rgba(2, 13, 6, 0.7) 100%),
             url("./assets/Images/1img.png");
         background-position: 70% center;
@@ -255,7 +257,7 @@ nav a:hover {
         text-align: center;
         justify-content: center;
         /* Mobile par gradient top-to-bottom achha lagta hai */
-        background: 
+        background:
             linear-gradient(180deg, rgba(2, 13, 6, 0.9) 0%, rgba(2, 13, 6, 0.85) 100%),
             url("./assets/Images/1img.png");
         background-position: center;
@@ -276,13 +278,14 @@ nav a:hover {
         line-height: 1.5;
     }
 
-    .hero .btn, 
+    .hero .btn,
     .hero a {
         display: inline-block;
         width: 100%;
         text-align: center;
     }
 }
+
 .hero-copy {
     max-width: 560px
 }
@@ -1176,6 +1179,19 @@ footer .footer-logo {
 .floating-call {
     background: #19a84a;
     animation: callVibrate 1.8s ease-in-out infinite;
+}
+
+.floating-call span{
+    font-size: 11px;
+    font-weight: 800;
+    position: absolute;
+    bottom: -4px;
+    white-space: nowrap;
+    background: #fff;
+    color: #17632e;
+    padding: 3px 7px;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
 }
 
 .floating-call::before {
