@@ -58,10 +58,10 @@
             $messageX91 .= "Pincode: " . $enqPincodeX91 . "\n";
 
             // Use a real domain email address
-            $fromEmailX91 = 'no-reply@vedayurhealthcare.com';
+            // $fromEmailX91 = 'no-reply@vedayurhealthcare.com';
 
-            $headersX91  = "From: Vedayur Healthcare <" . $fromEmailX91 . ">\r\n";
-            $headersX91 .= "Reply-To: " . $fromEmailX91 . "\r\n";
+            // $headersX91  = "From: Vedayur Healthcare <" . $fromEmailX91 . ">\r\n";
+            // $headersX91 .= "Reply-To: " . $fromEmailX91 . "\r\n";
 
 
 
@@ -75,8 +75,19 @@
 
 
 
+            // Use your actual domain email address
+            $fromEmailX91 = 'info@vedayurhealthcare.com';
+
+            $headersX91  = "From: Vedayur Healthcare <" . $fromEmailX91 . ">\r\n";
+            $headersX91 .= "Reply-To: " . $fromEmailX91 . "\r\n";
             $headersX91 .= "MIME-Version: 1.0\r\n";
             $headersX91 .= "Content-Type: text/plain; charset=UTF-8\r\n";
+
+
+
+
+            // $headersX91 .= "MIME-Version: 1.0\r\n";
+            // $headersX91 .= "Content-Type: text/plain; charset=UTF-8\r\n";
 
             if (mail($recipientX91, $subjectX91, $messageX91, $headersX91)) {
 
