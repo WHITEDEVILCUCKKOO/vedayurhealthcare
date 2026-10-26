@@ -77,7 +77,7 @@ if (
 
             echo "<script>" . enqLockCookieJsX91() . "
                 alert('Thank you! Our team will contact you soon.');
-                window.location.href = 'https://vedayurhealthcare.com/';
+                window.location.href = '/index.php';
             </script>";
 
             exit;
