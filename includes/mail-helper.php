@@ -6,7 +6,7 @@
 ------------------------------------------------------------------- */
 
 const ENQ_SMTP_USER_X91 = 'info@vedayurhealthcare.com';
-const ENQ_SMTP_PASS_X91 = 'YAHAN_EMAIL_KA_PASSWORD_DAALO';
+const ENQ_SMTP_PASS_X91 = '8FPR~c~Z&iBIWSBw';
 const ENQ_FROM_NAME_X91 = 'Vedayur Healthcare';
 const ENQ_TO_EMAIL_X91  = 'abhiweb.69@gmail.com';   // enquiry yahan aayegi
 
