@@ -72,7 +72,7 @@ if (
 
             echo "<script>
                 alert('Thank you! Our team will contact you soon.');
-                window.location.href = window.location.pathname + '#contact';
+                window.location.href = 'https://vedayurhealthcare.com/';
             </script>";
 
             exit;
