@@ -1,9 +1,109 @@
-
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+/* =====================================================
+ * SMTP SETTINGS - SIRF YAHAN APNI DETAILS BHARO
+ * ===================================================== */
+$smtpCfgX91 = [
+    'host'     => 'mail.yourdomain.com',   // hosting ka SMTP host (Gmail: smtp.gmail.com)
+    'port'     => 465,                     // 465 = ssl, 587 = tls
+    'secure'   => 'ssl',                   // 'ssl' ya 'tls'
+    'user'     => 'info@yourdomain.com',   // hosting pe banayi hui email
+    'pass'     => 'EMAIL_KA_PASSWORD',     // us email ka password (Gmail: App Password)
+    'from'     => 'info@yourdomain.com',   // 'user' wali hi email rakho
+    'fromName' => 'Vedayur Healthcare',
+];
+
+// Jis email par enquiry aani chahiye (testing ke liye apna Gmail rakho)
+$recipientX91 = 'heligo3242@hiringview.com';
+
+/* =====================================================
+ * SMTP SEND FUNCTION (bina PHPMailer / vendor ke)
+ * ===================================================== */
+if (!function_exists('smtpSendX91')) {
+    function smtpSendX91(array $cfg, string $to, string $subject, string $body, string &$err = ''): bool
+    {
+        $target = ($cfg['secure'] === 'ssl' ? 'ssl://' : '') . $cfg['host'] . ':' . $cfg['port'];
+        $fp = @stream_socket_client($target, $errno, $errstr, 15);
+
+        if (!$fp) {
+            $err = "Connect failed: $errno $errstr";
+            return false;
+        }
+        stream_set_timeout($fp, 15);
+
+        $read = function () use ($fp) {
+            $data = '';
+            while (($line = fgets($fp, 515)) !== false) {
+                $data .= $line;
+                if (strlen($line) < 4 || $line[3] === ' ') {
+                    break;
+                }
+            }
+            return $data;
+        };
+
+        $cmd = function (?string $c, string $expect) use ($fp, $read, &$err) {
+            if ($c !== null) {
+                fwrite($fp, $c . "\r\n");
+            }
+            $resp = $read();
+            if (strpos($resp, $expect) !== 0) {
+                $err = trim($resp);
+                return false;
+            }
+            return true;
+        };
+
+        $host = $_SERVER['SERVER_NAME'] ?? 'localhost';
+
+        if (!$cmd(null, '220')) { fclose($fp); return false; }
+        if (!$cmd("EHLO $host", '250')) { fclose($fp); return false; }
+
+        if ($cfg['secure'] === 'tls') {
+            if (!$cmd('STARTTLS', '220')) { fclose($fp); return false; }
+            if (!stream_socket_enable_crypto($fp, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+                $err = 'TLS failed';
+                fclose($fp);
+                return false;
+            }
+            if (!$cmd("EHLO $host", '250')) { fclose($fp); return false; }
+        }
+
+        if (!$cmd('AUTH LOGIN', '334')) { fclose($fp); return false; }
+        if (!$cmd(base64_encode($cfg['user']), '334')) { fclose($fp); return false; }
+        if (!$cmd(base64_encode($cfg['pass']), '235')) { fclose($fp); return false; }
+
+        if (!$cmd('MAIL FROM:<' . $cfg['from'] . '>', '250')) { fclose($fp); return false; }
+        if (!$cmd('RCPT TO:<' . $to . '>', '250')) { fclose($fp); return false; }
+        if (!$cmd('DATA', '354')) { fclose($fp); return false; }
+
+        $headers  = 'From: ' . $cfg['fromName'] . ' <' . $cfg['from'] . ">\r\n";
+        $headers .= 'To: <' . $to . ">\r\n";
+        $headers .= 'Subject: =?UTF-8?B?' . base64_encode($subject) . "?=\r\n";
+        $headers .= 'Date: ' . date('r') . "\r\n";
+        $headers .= 'Message-ID: <' . bin2hex(random_bytes(8)) . '@' . $host . ">\r\n";
+        $headers .= "MIME-Version: 1.0\r\n";
+        $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+        $headers .= "Content-Transfer-Encoding: 8bit\r\n";
+
+        $body = preg_replace("/\r\n|\r|\n/", "\r\n", $body);
+        $body = preg_replace('/^\./m', '..', $body);
+
+        fwrite($fp, $headers . "\r\n" . $body . "\r\n.\r\n");
+        if (!$cmd(null, '250')) { fclose($fp); return false; }
+
+        fwrite($fp, "QUIT\r\n");
+        fclose($fp);
+        return true;
+    }
+}
+
+/* =====================================================
+ * FORM HANDLING
+ * ===================================================== */
 $enqErrorsX91 = [];
 $enqSuccessX91 = '';
 
@@ -77,61 +177,51 @@ if (
     // Send email only when validation passes
     if (empty($enqErrorsX91)) {
 
-        // YOUR TESTING EMAIL - KEPT AS REQUESTED
-        
-$recipientX91 = 'heligo3242@hiringview.com';
-$subjectX91 = 'New Enquiry - Vedayur Healthcare';
+        $subjectX91 = 'New Enquiry - Vedayur Healthcare';
 
-$messageX91 =
-    "New enquiry received from Vedayur Healthcare website.\n\n" .
-    "Name: " . $enqNameX91 . "\n" .
-    "Phone: " . $enqPhoneX91 . "\n" .
-    "Area / City: " . $enqAreaX91 . "\n" .
-    "Pincode: " . $enqPincodeX91 . "\n" .
-    "Date: " . date('d-m-Y h:i A') . "\n";
+        $messageX91 =
+            "New enquiry received from Vedayur Healthcare website.\n\n" .
+            "Name: " . $enqNameX91 . "\n" .
+            "Phone: " . $enqPhoneX91 . "\n" .
+            "Area / City: " . $enqAreaX91 . "\n" .
+            "Pincode: " . $enqPincodeX91 . "\n" .
+            "Date: " . date('d-m-Y h:i A') . "\n";
 
-// Replace with an actual email address on your domain.
-$senderEmailX91 = 'YOUR_REAL_DOMAIN_EMAIL';
+        $smtpErrX91 = '';
+        $mailResultX91 = false;
 
-$headersX91 = [
-    'From' => 'Vedayur Healthcare <' . $senderEmailX91 . '>',
-    'Reply-To' => $senderEmailX91,
-    'MIME-Version' => '1.0',
-    'Content-Type' => 'text/plain; charset=UTF-8',
-    'X-Mailer' => 'PHP/' . phpversion()
-];
+        try {
+            $mailResultX91 = smtpSendX91(
+                $smtpCfgX91,
+                $recipientX91,
+                $subjectX91,
+                $messageX91,
+                $smtpErrX91
+            );
+        } catch (Throwable $mailExceptionX91) {
+            $smtpErrX91 = $mailExceptionX91->getMessage();
+        }
 
-$mailResultX91 = mail(
-    $recipientX91,
-    $subjectX91,
-    $messageX91,
-    $headersX91
-);
+        if ($mailResultX91 === true) {
+            error_log('Vedayur enquiry: email sent via SMTP to ' . $recipientX91);
 
-if ($mailResultX91) {
-    error_log(
-        'Vedayur enquiry: mail accepted for ' . $recipientX91
-    );
+            $enqSuccessX91 =
+                'Thank you! Your enquiry has been submitted successfully.';
 
-    $enqSuccessX91 =
-        'Your enquiry was accepted for sending.';
+            // Generate a fresh token after successful submission
+            $_SESSION['enq_csrf_x91'] = bin2hex(random_bytes(32));
 
-    $_SESSION['enq_csrf_x91'] = bin2hex(random_bytes(32));
+            $enqNameX91 = '';
+            $enqPhoneX91 = '';
+            $enqAreaX91 = '';
+            $enqPincodeX91 = '';
 
-    $enqNameX91 = '';
-    $enqPhoneX91 = '';
-    $enqAreaX91 = '';
-    $enqPincodeX91 = '';
+        } else {
+            error_log('Vedayur SMTP error: ' . $smtpErrX91);
 
-} else {
-    error_log(
-        'Vedayur enquiry: PHP mail() failed. Check hosting mail logs.'
-    );
-
-    $enqErrorsX91['general'] =
-        'Email could not be sent. Please try again later.';
-}
-
+            $enqErrorsX91['general'] =
+                'Sorry, your enquiry could not be sent. Please try again later.';
+        }
     }
 }
 ?>
