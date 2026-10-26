@@ -6,9 +6,9 @@
 ------------------------------------------------------------------- */
 
 const ENQ_SMTP_USER_X91 = 'info@vedayurhealthcare.com';
-const ENQ_SMTP_PASS_X91 = '8FPR~c~Z&iBIWSBw';
+const ENQ_SMTP_PASS_X91 = 'YAHAN_EMAIL_KA_PASSWORD_DAALO';
 const ENQ_FROM_NAME_X91 = 'Vedayur Healthcare';
-const ENQ_TO_EMAIL_X91  = 'abhiweb.69@gmail.com';   // enquiry yahan aayegi
+const ENQ_TO_EMAIL_X91  = 'vedayurayurveda@gmail.com';   // enquiry yahan aayegi
 
 // Pehle localhost try hoga, na chale to mail.domain
 const ENQ_SMTP_HOSTS_X91 = [
@@ -223,4 +223,19 @@ function enqLockScriptX91()
     })();
 </script>
 <?php
+}
+
+
+// Success popup + cookie lock + redirect (dono forms yahi use karte hain)
+function enqSuccessScriptX91($redirect = '/index.php')
+{
+    $message = "✅ Thank you! Your details have been sent.\n\n"
+        . "☎️ Our specialist will call you shortly.\n"
+        . "🗣️ Please attend the call.\n\n"
+        . "धन्यवाद! हमारे विशेषज्ञ जल्द ही आपको फ़ोन करेंगे।\n"
+        . "📞 कृपया फ़ोन ज़रूर उठाएँ।";
+
+    return '<script>' . enqLockCookieJsX91()
+        . 'alert(' . json_encode($message, JSON_UNESCAPED_UNICODE) . ');'
+        . 'window.location.href = ' . json_encode($redirect) . ';</script>';
 }

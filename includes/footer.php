@@ -3,7 +3,7 @@
         <img alt="Vedayur Healthcare — Sole Source of Hope" class="footer-logo" src="assets/Images/879ba129-e567-4940-92be-0639d165bed9 (1).png" />
         <div>© 2026 Vedayur Healthcare · Since 2009</div>
         <div class="footer-contact"><span class="email-icon">✉</span> <a
-                href="mailto:vedaayur@gmail.com">vedayurayurveda@gmail.com</a></div>
+                href="mailto:vedayurayurveda@gmail.com">vedayurayurveda@gmail.com</a></div>
     </footer>
 
 
