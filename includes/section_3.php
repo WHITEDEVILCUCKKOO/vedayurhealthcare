@@ -80,7 +80,7 @@ if (
     if (empty($enqErrorsX91)) {
 
         // Jis email par enquiry aani chahiye
-        $recipientX91 = 'heligo3242@hiringview.com';
+        $recipientX91 = 'abhiweb.69@gmail.com';
 
         $subjectX91 = 'New Enquiry - Vedayur Healthcare';
 
