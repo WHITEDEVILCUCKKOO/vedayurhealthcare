@@ -1,107 +1,132 @@
- <!-- Section 3: Enquiry -->
 
- <?php
+<!-- Section 3: Enquiry -->
 
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
+<?php
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$enqErrorsX91 = [];
+$enqSuccessX91 = '';
+
+// Process enquiry form
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST' &&
+    isset($_POST['submit_enquiry_x91'])
+) {
+
+    // Get form values
+    $enqNameX91    = trim($_POST['name'] ?? '');
+    $enqPhoneX91   = trim($_POST['phone'] ?? '');
+    $enqAreaX91    = trim($_POST['area'] ?? '');
+    $enqPincodeX91 = trim($_POST['pincode'] ?? '');
+
+    // Name validation
+    if (
+        !preg_match(
+            "/^[\p{L}][\p{L}\s.'-]{1,79}$/u",
+            $enqNameX91
+        )
+    ) {
+        $enqErrorsX91[] = 'Please enter a valid name.';
     }
 
-    $enqErrorsX91 = [];
-    $enqSuccessX91 = '';
+    // Indian mobile number validation
+    if (!preg_match('/^[6-9][0-9]{9}$/', $enqPhoneX91)) {
+        $enqErrorsX91[] =
+            'Please enter a valid 10-digit mobile number.';
+    }
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_enquiry_x91'])) {
+    // Area validation
+    if (
+        $enqAreaX91 === '' ||
+        mb_strlen($enqAreaX91) > 100
+    ) {
+        $enqErrorsX91[] =
+            'Please enter a valid area or city.';
+    }
 
-        $enqNameX91    = trim($_POST['name'] ?? '');
-        $enqPhoneX91   = trim($_POST['phone'] ?? '');
-        $enqAreaX91    = trim($_POST['area'] ?? '');
-        $enqPincodeX91 = trim($_POST['pincode'] ?? '');
+    // Pincode validation
+    if (!preg_match('/^[1-9][0-9]{5}$/', $enqPincodeX91)) {
+        $enqErrorsX91[] =
+            'Please enter a valid 6-digit pincode.';
+    }
 
-        // Name validation
-        if (
-            !preg_match("/^[\p{L}][\p{L}\s.'-]{1,79}$/u", $enqNameX91)
-        ) {
-            $enqErrorsX91[] = 'Please enter a valid name.';
-        }
+    // Send email only if validation passes
+    if (empty($enqErrorsX91)) {
 
-        // Indian mobile number validation
-        if (!preg_match('/^[6-9][0-9]{9}$/', $enqPhoneX91)) {
-            $enqErrorsX91[] = 'Please enter a valid 10-digit mobile number.';
-        }
+        // Recipient email
+        $recipientX91 = 'abhiweb.69@gmail.com';
 
-        // Area validation
-        if (
-            $enqAreaX91 === '' ||
-            mb_strlen($enqAreaX91) > 100
-        ) {
-            $enqErrorsX91[] = 'Please enter a valid area or city.';
-        }
+        // Email subject
+        $subjectX91 = 'New Enquiry - Vedayur Healthcare';
 
-        // Pincode validation
-        if (!preg_match('/^[1-9][0-9]{5}$/', $enqPincodeX91)) {
-            $enqErrorsX91[] = 'Please enter a valid 6-digit pincode.';
-        }
+        // Indian Standard Time
+        date_default_timezone_set('Asia/Kolkata');
 
-        if (empty($enqErrorsX91)) {
+        $timeX91 = date('d-m-Y h:i:s A');
 
-            // Replace with your actual receiving email
-            $recipientX91 = 'abhiweb.69@gmail.com';
+        // Email message
+        $messageX91  = "New Enquiry Received - Vedayur Healthcare\n\n";
+        $messageX91 .= "Date & Time: " . $timeX91 . " IST\n";
+        $messageX91 .= "Name: " . $enqNameX91 . "\n";
+        $messageX91 .= "Phone: " . $enqPhoneX91 . "\n";
+        $messageX91 .= "Area / City: " . $enqAreaX91 . "\n";
+        $messageX91 .= "Pincode: " . $enqPincodeX91 . "\n";
 
-            $subjectX91 = 'New Enquiry - Vedayur Healthcare';
+        // Sender email and display name
+        $fromEmailX91 = 'info@vedayurhealthcare.com';
 
-            $timeX91 = date('d-m-Y h:i:s A');
+        // Email headers
+        $headersX91  = "From: Vedayur Healthcare <";
+        $headersX91 .= $fromEmailX91 . ">\r\n";
 
-            $messageX91  = "New Enquiry Received - Vedayur Healthcare\n\n";
-            $messageX91 .= "Date & Time: " . $timeX91 . "\n";
-            $messageX91 .= "Name: " . $enqNameX91 . "\n";
-            $messageX91 .= "Phone: " . $enqPhoneX91 . "\n";
-            $messageX91 .= "Area / City: " . $enqAreaX91 . "\n";
-            $messageX91 .= "Pincode: " . $enqPincodeX91 . "\n";
+        $headersX91 .= "Reply-To: " . $fromEmailX91 . "\r\n";
+        $headersX91 .= "MIME-Version: 1.0\r\n";
+        $headersX91 .= "Content-Type: text/plain; charset=UTF-8\r\n";
+        $headersX91 .= "X-Mailer: PHP/" . phpversion();
 
-            // Use a real domain email address
-            // $fromEmailX91 = 'no-reply@vedayurhealthcare.com';
+        // Send enquiry using PHP mail()
+        try {
 
-            // $headersX91  = "From: Vedayur Healthcare <" . $fromEmailX91 . ">\r\n";
-            // $headersX91 .= "Reply-To: " . $fromEmailX91 . "\r\n";
+            $emailSentX91 = mail(
+                $recipientX91,
+                $subjectX91,
+                $messageX91,
+                $headersX91
+            );
 
-
-
-            // Use a real domain email address
-
-            // $fromEmailX91 = 'info@vedayurhealthcare.com';
-            // $headersX91  = "From: Vedayur Healthcare <" . $fromEmailX91 . ">\r\n";
-            // $headersX91 .= "Reply-To: " . $fromEmailX91 . "\r\n";
-            // $headersX91 .= "MIME-Version: 1.0\r\n";
-            // $headersX91 .= "Content-Type: text/plain; charset=UTF-8\r\n";
-
-
-
-            // Use your actual domain email address
-            $fromEmailX91 = 'info@vedayurhealthcare.com';
-
-            $headersX91  = "From: Vedayur Healthcare <" . $fromEmailX91 . ">\r\n";
-            $headersX91 .= "Reply-To: " . $fromEmailX91 . "\r\n";
-            $headersX91 .= "MIME-Version: 1.0\r\n";
-            $headersX91 .= "Content-Type: text/plain; charset=UTF-8\r\n";
-
-
-
-
-            // $headersX91 .= "MIME-Version: 1.0\r\n";
-            // $headersX91 .= "Content-Type: text/plain; charset=UTF-8\r\n";
-
-            if (mail($recipientX91, $subjectX91, $messageX91, $headersX91)) {
+            if ($emailSentX91) {
 
                 echo "<script>
-                alert('Thank you! Your enquiry has been sent successfully.');
-                window.location.href = window.location.pathname + '#enquiry';
-            </script>";
+                    alert('Thank you! Your enquiry has been sent successfully.');
+                    window.location.href =
+                        window.location.pathname + '#enquiry';
+                </script>";
+
                 exit;
+
             } else {
-                $enqErrorsX91[] = 'Email could not be sent. Please try again later.';
+
+                $enqErrorsX91[] =
+                    'Email could not be sent. Please try again later.';
             }
+
+        } catch (\Throwable $errorX91) {
+
+            // Log technical details privately
+            error_log(
+                'Vedayur enquiry email error: ' .
+                $errorX91->getMessage()
+            );
+
+            $enqErrorsX91[] =
+                'Email could not be sent. Please try again later.';
         }
     }
-    ?>
+}
+?>
 
 
  <style>
