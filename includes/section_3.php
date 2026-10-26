@@ -457,7 +457,27 @@ if (
         this.value = this.value.replace(/\D/g, '').slice(0, 6);
     });
 
-    formX91.addEventListener('submit', function (eventX91) {
+    /*
+     * Capture-phase listeners: ye site ki doosri scripts se PEHLE chalte hain.
+     * Isse koi aur script is form par fake "Thank you" popup nahi dikha payegi
+     * aur form asli PHP tak pahunchega.
+     */
+    window.addEventListener('click', function (eventX91) {
+        const btnX91 = eventX91.target.closest
+            ? eventX91.target.closest('#enquirySubmit')
+            : null;
+
+        if (btnX91) {
+            eventX91.stopImmediatePropagation();
+        }
+    }, true);
+
+    window.addEventListener('submit', function (eventX91) {
+        if (eventX91.target !== formX91) return;
+
+        eventX91.stopImmediatePropagation();
+        eventX91.preventDefault();
+
         let validX91 = true;
 
         Object.keys(fieldsX91).forEach(function (keyX91) {
@@ -467,8 +487,6 @@ if (
         });
 
         if (!validX91) {
-            eventX91.preventDefault();
-
             const firstInvalidX91 = formX91.querySelector(
                 '[aria-invalid="true"]'
             );
@@ -476,7 +494,11 @@ if (
             if (firstInvalidX91) {
                 firstInvalidX91.focus();
             }
+            return;
         }
-    });
+
+        // Native submit: koi submit event fire nahi hota, seedha PHP ko POST jata hai
+        HTMLFormElement.prototype.submit.call(formX91);
+    }, true);
 })();
 </script>
