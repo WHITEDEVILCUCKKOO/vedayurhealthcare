@@ -28,11 +28,6 @@ if (
     $conAreaX91    = trim($_POST['area'] ?? '');
     $conPincodeX91 = trim($_POST['pincode'] ?? '');
 
-    // 10 minute cooldown check (cookie)
-    if (enqCooldownActiveX91()) {
-        $conErrorsX91[] = 'You have already submitted a form. Please wait 10 minutes before sending another request.';
-    }
-
     // Name validation
     if (!preg_match("/^[\p{L}][\p{L}\s.'-]{1,79}$/u", $conNameX91)) {
         $conErrorsX91[] = 'Please enter a valid name.';
@@ -44,12 +39,12 @@ if (
     }
 
     // Area validation
-    if ($conAreaX91 !== '' && mb_strlen($conAreaX91) > 100) {
+    if ($conAreaX91 === '' || mb_strlen($conAreaX91) > 100) {
         $conErrorsX91[] = 'Please enter a valid area or city.';
     }
 
     // Pincode validation
-    if ($conPincodeX91 !== '' && !preg_match('/^[1-9][0-9]{5}$/', $conPincodeX91)) {
+    if (!preg_match('/^[1-9][0-9]{5}$/', $conPincodeX91)) {
         $conErrorsX91[] = 'Please enter a valid 6-digit pincode.';
     }
 
@@ -68,14 +63,17 @@ if (
         $conMessageX91 .= "Date & Time: " . $conTimeX91 . " IST\n";
         $conMessageX91 .= "Name: " . $conNameX91 . "\n";
         $conMessageX91 .= "Phone: " . $conPhoneX91 . "\n";
-        $conMessageX91 .= "Area: " . ($conAreaX91 !== '' ? $conAreaX91 : 'Not provided') . "\n";
-        $conMessageX91 .= "Pincode: " . ($conPincodeX91 !== '' ? $conPincodeX91 : 'Not provided') . "\n";
+        $conMessageX91 .= "Area: " . $conAreaX91 . "\n";
+        $conMessageX91 .= "Pincode: " . $conPincodeX91 . "\n";
 
         try {
 
             enqSendMailX91(ENQ_TO_EMAIL_X91, $conSubjectX91, $conMessageX91);
 
-            echo enqSuccessScriptX91('/index.php');
+            echo "<script>
+                alert('Thank you! Our team will contact you soon.');
+                window.location.href = window.location.pathname + '#contact';
+            </script>";
 
             exit;
 
@@ -173,17 +171,17 @@ if (
              </div>
 
              <div class="field">
-                 <label for="contactArea">Area <span style="font-weight:400;opacity:.7;font-size:.85em">(Optional)</span></label>
+                 <label for="contactArea">Area <span class="required-star">*</span></label>
                  <input type="text" id="contactArea" name="area" placeholder="Your Area"
-                     autocomplete="address-level2" maxlength="100"
+                     autocomplete="address-level2" maxlength="100" required
                      value="<?= htmlspecialchars($conAreaX91, ENT_QUOTES, 'UTF-8') ?>">
                  <small class="contact-error" id="contactAreaError"></small>
              </div>
 
              <div class="field">
-                 <label for="contactPincode">Pincode <span style="font-weight:400;opacity:.7;font-size:.85em">(Optional)</span></label>
+                 <label for="contactPincode">Pincode <span class="required-star">*</span></label>
                  <input type="text" id="contactPincode" name="pincode" inputmode="numeric" maxlength="6"
-                     placeholder="6-digit Pincode" autocomplete="postal-code"
+                     placeholder="6-digit Pincode" autocomplete="postal-code" required
                      value="<?= htmlspecialchars($conPincodeX91, ENT_QUOTES, 'UTF-8') ?>">
                  <small class="contact-error" id="contactPincodeError"></small>
              </div>
@@ -198,8 +196,6 @@ if (
      </form>
 
  </section>
-
- <?php enqLockScriptX91(); ?>
 
  <script>
      document.addEventListener("DOMContentLoaded", function() {
@@ -242,13 +238,13 @@ if (
                  isValidX91 = false;
              }
 
-             if (cAreaX91.value.trim() !== "" && !/^[\p{L}\p{N}][\p{L}\p{N}\s,.'()/-]{1,99}$/u.test(cAreaX91.value.trim())) {
+             if (!/^[\p{L}\p{N}][\p{L}\p{N}\s,.'()/-]{1,99}$/u.test(cAreaX91.value.trim())) {
                  cAreaErrX91.textContent = "Please enter a valid area or city (minimum 2 characters).";
                  cAreaX91.style.borderColor = "#dc2626";
                  isValidX91 = false;
              }
 
-             if (cPincodeX91.value.trim() !== "" && !/^[1-9][0-9]{5}$/.test(cPincodeX91.value.trim())) {
+             if (!/^[1-9][0-9]{5}$/.test(cPincodeX91.value.trim())) {
                  cPincodeErrX91.textContent = "Enter a valid 6-digit Indian pincode.";
                  cPincodeX91.style.borderColor = "#dc2626";
                  isValidX91 = false;
@@ -266,15 +262,6 @@ if (
          [cNameX91, cPhoneX91, cAreaX91, cPincodeX91].forEach(function(fieldX91) {
              fieldX91.addEventListener("input", function() {
                  validateContactX91();
-             });
-         });
-
-         // Sirf numbers type ho sakein (alphabet/symbol block)
-         [cPhoneX91, cPincodeX91].forEach(function(fieldX91) {
-             fieldX91.addEventListener("keypress", function(eventX91) {
-                 if (eventX91.key.length === 1 && !eventX91.ctrlKey && !eventX91.metaKey && !/\d/.test(eventX91.key)) {
-                     eventX91.preventDefault();
-                 }
              });
          });
 
