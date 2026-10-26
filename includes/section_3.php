@@ -79,7 +79,7 @@ if (
     // Send email only when validation passes
     if (empty($enqErrorsX91)) {
 
-        // Jis email par enquiry aani chahiye
+        // YAHAN APNA GMAIL DAALO (enquiry isi par aayegi)
         $recipientX91 = 'abhiweb.69@gmail.com';
 
         $subjectX91 = 'New Enquiry - Vedayur Healthcare';
@@ -105,17 +105,6 @@ if (
         $headersX91 .= "MIME-Version: 1.0\r\n";
         $headersX91 .= "Content-Type: text/plain; charset=UTF-8\r\n";
         $headersX91 .= 'X-Mailer: PHP/' . phpversion();
-
-        // Backup: har enquiry file mein bhi save hoti hai (email na jaye to bhi lead safe)
-        $logFileX91 = __DIR__ . '/enquiries-log.php';
-        if (!file_exists($logFileX91)) {
-            @file_put_contents($logFileX91, "<?php exit; ?>\n");
-        }
-        @file_put_contents(
-            $logFileX91,
-            str_repeat('-', 40) . "\n" . $messageX91 . "\n",
-            FILE_APPEND | LOCK_EX
-        );
 
         $mailResultX91 = false;
 
