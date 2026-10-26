@@ -78,13 +78,12 @@ if (
             echo enqSuccessScriptX91('/index.php');
 
             exit;
-
         } catch (\Throwable $conErrorX91) {
 
             // Technical error sirf server log mein jayega
             error_log(
                 'Vedayur contact email error: ' .
-                $conErrorX91->getMessage()
+                    $conErrorX91->getMessage()
             );
 
             $conErrorsX91[] =
@@ -94,153 +93,154 @@ if (
 }
 ?>
 
- <style>
-     /* Contact Form Validation - X91 */
-     .contact-form .field input {
-         width: 100%;
-         box-sizing: border-box;
-         border-radius: 8px;
-     }
+<style>
+    /* Contact Form Validation - X91 */
+    .contact-form .field input {
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 8px;
+    }
 
-     .contact-form .contact-error {
-         display: block;
-         margin-top: 5px;
-         color: #dc2626;
-         font-size: 13px;
-         line-height: 1.5;
-         font-weight: 500;
-     }
+    .contact-form .contact-error {
+        display: block;
+        margin-top: 5px;
+        color: #dc2626;
+        font-size: 13px;
+        line-height: 1.5;
+        font-weight: 500;
+    }
 
-     .contact-form .contact-error:empty {
-         display: none;
-         margin: 0;
-     }
+    .contact-form .contact-error:empty {
+        display: none;
+        margin: 0;
+    }
 
-     .contact-form .required-star {
-         color: #dc2626;
-     }
+    .contact-form .required-star {
+        color: #dc2626;
+    }
 
-     .contact-form .contact-server-errors-x91 {
-         color: #dc2626;
-         font-size: 14px;
-         font-weight: 500;
-         margin-bottom: 12px;
-     }
+    .contact-form .contact-server-errors-x91 {
+        color: #dc2626;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 12px;
+    }
 
-     .contact-form .contact-server-errors-x91 p {
-         margin: 0 0 4px;
-     }
- </style>
+    .contact-form .contact-server-errors-x91 p {
+        margin: 0 0 4px;
+    }
+</style>
 
- <section class="contact" id="contact">
-     <div class="contact-copy">
-         <h2>Ready to Begin Your<br />Wellness Journey?</h2>
-         <p>Get in touch with us for product details, guidance or treatment information.</p>
-         <p>We have been serving wellness needs since 2009.</p>
-         <div class="since">✦ Since 2009<br /><small style="color:#ddd">Trusted for a Healthier Tomorrow</small>
-         </div>
-     </div>
+<section class="contact" id="contact">
+    <div class="contact-copy">
+        <h2>Ready to Begin Your<br />Wellness Journey?</h2>
+        <p>Get in touch with us for product details, guidance or treatment information.</p>
+        <p>We have been serving wellness needs since 2009.</p>
+        <div class="since">✦ Since 2009<br /><small style="color:#ddd">Trusted for a Healthier Tomorrow</small>
+        </div>
+    </div>
 
-     <!-- Section 7: Contact Form -->
-     <form class="contact-form" id="contactForm" method="POST" action="#contact" novalidate>
-         <h3>Contact Vedayur Healthcare</h3>
-         <p>Fill in your details and our team will contact you.</p>
+    <!-- Section 7: Contact Form -->
+    <form class="contact-form" id="contactForm" method="POST" action="#contact" novalidate>
+        <h3>Contact Vedayur Healthcare</h3>
+        <p>Fill in your details and our team will contact you.</p>
 
-         <?php if (!empty($conErrorsX91)): ?>
-             <div class="contact-server-errors-x91" role="alert">
-                 <?php foreach ($conErrorsX91 as $conErrX91): ?>
-                     <p><?= htmlspecialchars($conErrX91, ENT_QUOTES, 'UTF-8') ?></p>
-                 <?php endforeach; ?>
-             </div>
-         <?php endif; ?>
+        <?php if (!empty($conErrorsX91)): ?>
+            <div class="contact-server-errors-x91" role="alert">
+                <?php foreach ($conErrorsX91 as $conErrX91): ?>
+                    <p><?= htmlspecialchars($conErrX91, ENT_QUOTES, 'UTF-8') ?></p>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
 
-         <div class="contact-fields">
+        <div class="contact-fields">
 
-             <div class="field">
-                 <label for="contactName">Name <span class="required-star">*</span></label>
-                 <input type="text" id="contactName" name="name" placeholder="Your Name" autocomplete="name"
-                     maxlength="80" required
-                     value="<?= htmlspecialchars($conNameX91, ENT_QUOTES, 'UTF-8') ?>">
-                 <small class="contact-error" id="contactNameError"></small>
-             </div>
+            <div class="field">
+                <label for="contactName">Name <span class="required-star">*</span></label>
+                <input type="text" id="contactName" name="name" placeholder="Your Name" autocomplete="name"
+                    maxlength="80" required
+                    value="<?= htmlspecialchars($conNameX91, ENT_QUOTES, 'UTF-8') ?>">
+                <small class="contact-error" id="contactNameError"></small>
+            </div>
 
-             <div class="field">
-                 <label for="contactPhone">Number <span class="required-star">*</span></label>
-                 <input type="tel" id="contactPhone" name="phone" inputmode="numeric" maxlength="14"
-                     placeholder="Your Phone Number" autocomplete="tel" required
-                     value="<?= htmlspecialchars($conPhoneX91, ENT_QUOTES, 'UTF-8') ?>">
-                 <small class="contact-error" id="contactPhoneError"></small>
-             </div>
+            <div class="field">
+                <label for="contactPhone">Number <span class="required-star">*</span></label>
+                <input type="tel" id="contactPhone" name="phone" inputmode="numeric" maxlength="14"
+                    placeholder="Your Phone Number" autocomplete="tel" required
+                    value="<?= htmlspecialchars($conPhoneX91, ENT_QUOTES, 'UTF-8') ?>">
+                <small class="contact-error" id="contactPhoneError"></small>
+            </div>
 
-             <div class="field">
-                 <label for="contactArea">Area <span style="font-weight:400;opacity:.7;font-size:.85em">(Optional)</span></label>
-                 <input type="text" id="contactArea" name="area" placeholder="Your Area"
-                     autocomplete="address-level2" maxlength="100"
-                     value="<?= htmlspecialchars($conAreaX91, ENT_QUOTES, 'UTF-8') ?>">
-                 <small class="contact-error" id="contactAreaError"></small>
-             </div>
+            <div class="field">
+                <label for="contactArea">Area <span style="font-weight:400;opacity:.7;font-size:.85em">(Optional)</span></label>
+                <input type="text" id="contactArea" name="area" placeholder="Your Area"
+                    autocomplete="address-level2" maxlength="100"
+                    value="<?= htmlspecialchars($conAreaX91, ENT_QUOTES, 'UTF-8') ?>">
+                <small class="contact-error" id="contactAreaError"></small>
+            </div>
 
-             <div class="field">
-                 <label for="contactPincode">Pincode <span style="font-weight:400;opacity:.7;font-size:.85em">(Optional)</span></label>
-                 <input type="text" id="contactPincode" name="pincode" inputmode="numeric" maxlength="6"
-                     placeholder="6-digit Pincode" autocomplete="postal-code"
-                     value="<?= htmlspecialchars($conPincodeX91, ENT_QUOTES, 'UTF-8') ?>">
-                 <small class="contact-error" id="contactPincodeError"></small>
-             </div>
+            <div class="field">
+                <label for="contactPincode">Pincode <span style="font-weight:400;opacity:.7;font-size:.85em">(Optional)</span></label>
+                <input type="text" id="contactPincode" name="pincode" inputmode="numeric" maxlength="6"
+                    placeholder="6-digit Pincode" autocomplete="postal-code"
+                    value="<?= htmlspecialchars($conPincodeX91, ENT_QUOTES, 'UTF-8') ?>">
+                <small class="contact-error" id="contactPincodeError"></small>
+            </div>
 
-         </div>
+        </div>
 
-         <button class="submit" type="submit" id="contactSubmit" name="submit_contact_x91">
-             ➤ &nbsp; Send Details
-         </button>
+        <button class="submit" type="submit" id="contactSubmit" name="submit_contact_x91">
+            ➤ &nbsp; Send Details
+        </button>
 
-         <div class="safe">🔒 Your information is safe with us.</div>
-     </form>
+        <div class="safe">🔒 Your information is safe with us.</div>
+    </form>
 
- </section>
+</section>
 
- <?php enqLockScriptX91(); ?>
+<?php enqLockScriptX91(); ?>
 
- <script>
-     document.addEventListener("DOMContentLoaded", function() {
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
 
-         const contactFormX91 = document.getElementById("contactForm");
+        const contactFormX91 = document.getElementById("contactForm");
 
-         if (!contactFormX91) return;
+        if (!contactFormX91) return;
 
-         const cNameX91 = document.getElementById("contactName");
-         const cPhoneX91 = document.getElementById("contactPhone");
+        const cNameX91 = document.getElementById("contactName");
+        const cPhoneX91 = document.getElementById("contactPhone");
         //  const cAreaX91 = document.getElementById("contactArea");
         //  const cPincodeX91 = document.getElementById("contactPincode");
 
-         const cNameErrX91 = document.getElementById("contactNameError");
-         const cPhoneErrX91 = document.getElementById("contactPhoneError");
+        const cNameErrX91 = document.getElementById("contactNameError");
+        const cPhoneErrX91 = document.getElementById("contactPhoneError");
         //  const cAreaErrX91 = document.getElementById("contactAreaError");
         //  const cPincodeErrX91 = document.getElementById("contactPincodeError");
 
-         function validateContactX91() {
-             let isValidX91 = true;
+        function validateContactX91() {
+            let isValidX91 = true;
 
-             cNameErrX91.textContent = "";
-             cPhoneErrX91.textContent = "";
+            cNameErrX91.textContent = "";
+            cPhoneErrX91.textContent = "";
             // //  cAreaErrX91.textContent = "";
             //  cPincodeErrX91.textContent = "";
 
-             [cNameX91, cPhoneX91].forEach(function(fieldX91) {
-                 fieldX91.style.borderColor = "";
-             });
+            [cNameX91, cPhoneX91].forEach(function(fieldX91) {
+                fieldX91.style.borderColor = "";
+            });
 
-             if (!/^[\p{L}][\p{L}\s.'-]{1,79}$/u.test(cNameX91.value.trim())) {
-                 cNameErrX91.textContent = "Please enter a valid name (minimum 2 characters).";
-                 cNameX91.style.borderColor = "#dc2626";
-                 isValidX91 = false;
-             }
+            if (!/^[\p{L}][\p{L}\s.'-]{1,79}$/u.test(cNameX91.value.trim())) {
+                cNameErrX91.textContent = "Please enter a valid name (minimum 2 characters).";
+                cNameX91.style.borderColor = "#dc2626";
+                isValidX91 = false;
+            }
 
-             if (!/^[6-9]\d{9}$/.test(cPhoneX91.value.trim())) {
-                 cPhoneErrX91.textContent = "Enter a valid 10-digit Indian mobile number.";
-                 cPhoneX91.style.borderColor = "#dc2626";
+           
+            if (!/^\d{10,14}$/.test(cPhoneX91.value.trim())) {
+                 cPhoneErrX91.textContent = "Enter a valid mobile number (10 to 14 digits).";
+               cPhoneX91.style.borderColor = "#dc2626";
                  isValidX91 = false;
-             }
+            }
 
             //  if (cAreaX91.value.trim() !== "" && !/^[\p{L}\p{N}][\p{L}\p{N}\s,.'()/-]{1,99}$/u.test(cAreaX91.value.trim())) {
             //      cAreaErrX91.textContent = "Please enter a valid area or city (minimum 2 characters).";
@@ -254,37 +254,37 @@ if (
             //      isValidX91 = false;
             //  }
 
-             return isValidX91;
-         }
+            return isValidX91;
+        }
 
-         contactFormX91.addEventListener("submit", function(eventX91) {
-             if (!validateContactX91()) {
-                 eventX91.preventDefault();
-             }
-         });
+        contactFormX91.addEventListener("submit", function(eventX91) {
+            if (!validateContactX91()) {
+                eventX91.preventDefault();
+            }
+        });
 
-         [cNameX91, cPhoneX91, cAreaX91, cPincodeX91].forEach(function(fieldX91) {
-             fieldX91.addEventListener("input", function() {
-                 validateContactX91();
-             });
-         });
+        [cNameX91, cPhoneX91, cAreaX91, cPincodeX91].forEach(function(fieldX91) {
+            fieldX91.addEventListener("input", function() {
+                validateContactX91();
+            });
+        });
 
-         // Sirf numbers type ho sakein (alphabet/symbol block)
-         [cPhoneX91, cPincodeX91].forEach(function(fieldX91) {
-             fieldX91.addEventListener("keypress", function(eventX91) {
-                 if (eventX91.key.length === 1 && !eventX91.ctrlKey && !eventX91.metaKey && !/\d/.test(eventX91.key)) {
-                     eventX91.preventDefault();
-                 }
-             });
-         });
+        // Sirf numbers type ho sakein (alphabet/symbol block)
+        [cPhoneX91, cPincodeX91].forEach(function(fieldX91) {
+            fieldX91.addEventListener("keypress", function(eventX91) {
+                if (eventX91.key.length === 1 && !eventX91.ctrlKey && !eventX91.metaKey && !/\d/.test(eventX91.key)) {
+                    eventX91.preventDefault();
+                }
+            });
+        });
 
-         cPhoneX91.addEventListener("input", function() {
-             cPhoneX91.value = cPhoneX91.value.replace(/\D/g, "").slice(0, 10);
-         });
+        cPhoneX91.addEventListener("input", function() {
+            cPhoneX91.value = cPhoneX91.value.replace(/\D/g, "").slice(0, 10);
+        });
 
-         cPincodeX91.addEventListener("input", function() {
-             cPincodeX91.value = cPincodeX91.value.replace(/\D/g, "").slice(0, 6);
-         });
+        cPincodeX91.addEventListener("input", function() {
+            cPincodeX91.value = cPincodeX91.value.replace(/\D/g, "").slice(0, 6);
+        });
 
-     });
- </script>
+    });
+</script>
