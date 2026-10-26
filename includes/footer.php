@@ -10,12 +10,27 @@
 
     <div class="toast" id="toast">Thank you! We received your enquiry.</div>
 
-    <a aria-label="Call Vedayur Healthcare" class="floating-call" href="tel:+917303722421">
-        <svg class="call-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1.5 1.5 0 0 1 1.53-.36c.83.28 1.72.43 2.63.43a1.43 1.43 0 0 1 1.43 1.43v3.49A1.43 1.43 0 0 1 19.57 21C10.42 21 3 13.58 3 4.43A1.43 1.43 0 0 1 4.43 3h3.5a1.43 1.43 0 0 1 1.43 1.43c0 .91.15 1.8.43 2.63a1.5 1.5 0 0 1-.36 1.53l-2.2 2.2z"></path>
-        </svg>
-        <span style="display: none;">+917303722421</span>
-    </a>
+
+
+
+<a
+    href="tel:+917303722421"
+    class="floating-call"
+    aria-label="Call Vedayur Healthcare"
+    target="_self"
+    onclick="window.location.href='tel:+917303722421'; return false;"
+>
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="call-icon"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+    >
+        <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1.5 1.5 0 0 1 1.53-.36c.83.28 1.72.43 2.63.43A1.43 1.43 0 0 1 21 19.45v1.12A1.43 1.43 0 0 1 19.57 22C10.42 22 3 14.58 3 5.43A1.43 1.43 0 0 1 4.43 4h3.5a1.43 1.43 0 0 1 1.43 1.43c0 .91.15 1.8.43 2.63a1.5 1.5 0 0 1-.36 1.53z"/>
+    </svg>
+</a>
+
+
 
     <!-- <div class="floating-call" role="link" tabindex="0" aria-label="Chat with Vedayur Healthcare on WhatsApp"
         onclick="window.open('https://wa.me/917303722421?text=Hello%20Sir%2FMam%2C%20I%20would%20like%20to%20know%20more%20about%20Vedayur%20Healthcare.','_blank','noopener,noreferrer')"
