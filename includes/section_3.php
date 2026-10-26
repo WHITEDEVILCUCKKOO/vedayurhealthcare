@@ -78,76 +78,60 @@ if (
     if (empty($enqErrorsX91)) {
 
         // YOUR TESTING EMAIL - KEPT AS REQUESTED
-        $recipientX91 = 'heligo3242@hiringview.com';
+        
+$recipientX91 = 'heligo3242@hiringview.com';
+$subjectX91 = 'New Enquiry - Vedayur Healthcare';
 
-        $subjectX91 = 'New Enquiry - Vedayur Healthcare';
+$messageX91 =
+    "New enquiry received from Vedayur Healthcare website.\n\n" .
+    "Name: " . $enqNameX91 . "\n" .
+    "Phone: " . $enqPhoneX91 . "\n" .
+    "Area / City: " . $enqAreaX91 . "\n" .
+    "Pincode: " . $enqPincodeX91 . "\n" .
+    "Date: " . date('d-m-Y h:i A') . "\n";
 
-        $messageX91 =
-            "New enquiry received from Vedayur Healthcare website.\n\n" .
-            "Name: " . $enqNameX91 . "\n" .
-            "Phone: " . $enqPhoneX91 . "\n" .
-            "Area / City: " . $enqAreaX91 . "\n" .
-            "Pincode: " . $enqPincodeX91 . "\n" .
-            "Date: " . date('d-m-Y h:i A') . "\n";
+// Replace with an actual email address on your domain.
+$senderEmailX91 = 'YOUR_REAL_DOMAIN_EMAIL';
 
-        /*
-         * IMPORTANT:
-         * Replace this placeholder with an actual email address
-         * created on your website's domain.
-         */
-        $senderEmailX91 = 'noreply@yourdomain.com';
+$headersX91 = [
+    'From' => 'Vedayur Healthcare <' . $senderEmailX91 . '>',
+    'Reply-To' => $senderEmailX91,
+    'MIME-Version' => '1.0',
+    'Content-Type' => 'text/plain; charset=UTF-8',
+    'X-Mailer' => 'PHP/' . phpversion()
+];
 
-        $headersX91 = [];
-        $headersX91[] = 'From: Vedayur Healthcare <' . $senderEmailX91 . '>';
-        $headersX91[] = 'MIME-Version: 1.0';
-        $headersX91[] = 'Content-Type: text/plain; charset=UTF-8';
-        $headersX91[] = 'X-Mailer: PHP/' . phpversion();
+$mailResultX91 = mail(
+    $recipientX91,
+    $subjectX91,
+    $messageX91,
+    $headersX91
+);
 
-        $headersStringX91 = implode("\r\n", $headersX91);
+if ($mailResultX91) {
+    error_log(
+        'Vedayur enquiry: mail accepted for ' . $recipientX91
+    );
 
-        // Attempt to send the email
-        $mailResultX91 = false;
+    $enqSuccessX91 =
+        'Your enquiry was accepted for sending.';
 
-        try {
-            $mailResultX91 = mail(
-                $recipientX91,
-                $subjectX91,
-                $messageX91,
-                $headersStringX91
-            );
-        } catch (Throwable $mailExceptionX91) {
-            error_log(
-                'Vedayur enquiry mail exception: ' .
-                $mailExceptionX91->getMessage()
-            );
-        }
+    $_SESSION['enq_csrf_x91'] = bin2hex(random_bytes(32));
 
-        if ($mailResultX91 === true) {
-            error_log(
-                'Vedayur enquiry: mail() accepted the message for ' .
-                $recipientX91
-            );
+    $enqNameX91 = '';
+    $enqPhoneX91 = '';
+    $enqAreaX91 = '';
+    $enqPincodeX91 = '';
 
-            $enqSuccessX91 =
-                'Thank you! Your enquiry has been submitted successfully.';
+} else {
+    error_log(
+        'Vedayur enquiry: PHP mail() failed. Check hosting mail logs.'
+    );
 
-            // Generate a fresh token after successful submission
-            $_SESSION['enq_csrf_x91'] =
-                bin2hex(random_bytes(32));
+    $enqErrorsX91['general'] =
+        'Email could not be sent. Please try again later.';
+}
 
-            $enqNameX91 = '';
-            $enqPhoneX91 = '';
-            $enqAreaX91 = '';
-            $enqPincodeX91 = '';
-
-        } else {
-            error_log(
-                'Vedayur enquiry: mail() returned FALSE. Check hosting mail configuration.'
-            );
-
-            $enqErrorsX91['general'] =
-                'Sorry, your enquiry could not be sent. Please try again later.';
-        }
     }
 }
 ?>
