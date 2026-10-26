@@ -1,9 +1,11 @@
-
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+/* =====================================================
+ * FORM HANDLING
+ * ===================================================== */
 $enqErrorsX91 = [];
 $enqSuccessX91 = '';
 
@@ -77,7 +79,7 @@ if (
     // Send email only when validation passes
     if (empty($enqErrorsX91)) {
 
-        // YOUR TESTING EMAIL - KEPT AS REQUESTED
+        // Jis email par enquiry aani chahiye
         $recipientX91 = 'heligo3242@hiringview.com';
 
         $subjectX91 = 'New Enquiry - Vedayur Healthcare';
@@ -90,50 +92,64 @@ if (
             "Pincode: " . $enqPincodeX91 . "\n" .
             "Date: " . date('d-m-Y h:i A') . "\n";
 
-        /*
-         * IMPORTANT:
-         * Replace this placeholder with an actual email address
-         * created on your website's domain.
-         */
-        $senderEmailX91 = 'heligo3242@hiringview.com';
+        // Sender email: automatically aapke website ke domain se banegi
+        $hostX91 = strtolower((string) ($_SERVER['HTTP_HOST'] ?? 'localhost'));
+        $hostX91 = preg_replace('/:\d+$/', '', $hostX91);
+        $hostX91 = preg_replace('/^www\./', '', $hostX91);
+        $hostX91 = preg_replace('/[^a-z0-9.\-]/', '', $hostX91);
+        $senderEmailX91 = 'noreply@' . $hostX91;
 
-        $headersX91 = [];
-        $headersX91[] = 'From: Vedayur Healthcare <' . $senderEmailX91 . '>';
-        $headersX91[] = 'MIME-Version: 1.0';
-        $headersX91[] = 'Content-Type: text/plain; charset=UTF-8';
-        $headersX91[] = 'X-Mailer: PHP/' . phpversion();
+        $encodedSubjectX91 = '=?UTF-8?B?' . base64_encode($subjectX91) . '?=';
 
-        $headersStringX91 = implode("\r\n", $headersX91);
+        $headersX91  = 'From: Vedayur Healthcare <' . $senderEmailX91 . ">\r\n";
+        $headersX91 .= "MIME-Version: 1.0\r\n";
+        $headersX91 .= "Content-Type: text/plain; charset=UTF-8\r\n";
+        $headersX91 .= 'X-Mailer: PHP/' . phpversion();
 
-        // Attempt to send the email
+        // Backup: har enquiry file mein bhi save hoti hai (email na jaye to bhi lead safe)
+        $logFileX91 = __DIR__ . '/enquiries-log.php';
+        if (!file_exists($logFileX91)) {
+            @file_put_contents($logFileX91, "<?php exit; ?>\n");
+        }
+        @file_put_contents(
+            $logFileX91,
+            str_repeat('-', 40) . "\n" . $messageX91 . "\n",
+            FILE_APPEND | LOCK_EX
+        );
+
         $mailResultX91 = false;
 
         try {
-            $mailResultX91 = mail(
+            // Pehle envelope sender (-f) ke saath try karo
+            $mailResultX91 = @mail(
                 $recipientX91,
-                $subjectX91,
+                $encodedSubjectX91,
                 $messageX91,
-                $headersStringX91
+                $headersX91,
+                '-f' . $senderEmailX91
             );
+
+            // Agar hosting -f allow nahi karti to bina -f ke try karo
+            if ($mailResultX91 !== true) {
+                $mailResultX91 = @mail(
+                    $recipientX91,
+                    $encodedSubjectX91,
+                    $messageX91,
+                    $headersX91
+                );
+            }
         } catch (Throwable $mailExceptionX91) {
-            error_log(
-                'Vedayur enquiry mail exception: ' .
-                $mailExceptionX91->getMessage()
-            );
+            error_log('Vedayur enquiry mail exception: ' . $mailExceptionX91->getMessage());
         }
 
         if ($mailResultX91 === true) {
-            error_log(
-                'Vedayur enquiry: mail() accepted the message for ' .
-                $recipientX91
-            );
+            error_log('Vedayur enquiry: mail() accepted the message for ' . $recipientX91);
 
             $enqSuccessX91 =
                 'Thank you! Your enquiry has been submitted successfully.';
 
             // Generate a fresh token after successful submission
-            $_SESSION['enq_csrf_x91'] =
-                bin2hex(random_bytes(32));
+            $_SESSION['enq_csrf_x91'] = bin2hex(random_bytes(32));
 
             $enqNameX91 = '';
             $enqPhoneX91 = '';
@@ -141,9 +157,7 @@ if (
             $enqPincodeX91 = '';
 
         } else {
-            error_log(
-                'Vedayur enquiry: mail() returned FALSE. Check hosting mail configuration.'
-            );
+            error_log('Vedayur enquiry: mail() returned FALSE. Check hosting mail configuration.');
 
             $enqErrorsX91['general'] =
                 'Sorry, your enquiry could not be sent. Please try again later.';
