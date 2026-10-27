@@ -39,19 +39,19 @@ if (
     }
 
     // Indian mobile number validation
-    if (!preg_match('/^[6-9][0-9]{9}$/', $conPhoneX91)) {
-        $conErrorsX91[] = 'Please enter a valid 10-digit mobile number.';
-    }
+    // if (!preg_match('/^[6-9][0-9]{9}$/', $conPhoneX91)) {
+    //     $conErrorsX91[] = 'Please enter a valid 10-digit mobile number.';
+    // }
 
     // Area validation
-    if ($conAreaX91 !== '' && mb_strlen($conAreaX91) > 100) {
-        $conErrorsX91[] = 'Please enter a valid area or city.';
-    }
+    // if ($conAreaX91 !== '' && mb_strlen($conAreaX91) > 100) {
+    //     $conErrorsX91[] = 'Please enter a valid area or city.';
+    // }
 
     // Pincode validation
-    if ($conPincodeX91 !== '' && !preg_match('/^[1-9][0-9]{5}$/', $conPincodeX91)) {
-        $conErrorsX91[] = 'Please enter a valid 6-digit pincode.';
-    }
+    // if ($conPincodeX91 !== '' && !preg_match('/^[1-9][0-9]{5}$/', $conPincodeX91)) {
+    //     $conErrorsX91[] = 'Please enter a valid 6-digit pincode.';
+    // }
 
     // Send email only if validation passes
     if (empty($conErrorsX91)) {
@@ -236,11 +236,11 @@ if (
             }
 
            
-            if (!/^\d{10,14}$/.test(cPhoneX91.value.trim())) {
-                 cPhoneErrX91.textContent = "Enter a valid mobile number (10 to 14 digits).";
-               cPhoneX91.style.borderColor = "#dc2626";
-                 isValidX91 = false;
-            }
+            // if (!/^\d{10,14}$/.test(cPhoneX91.value.trim())) {
+            //      cPhoneErrX91.textContent = "Enter a valid mobile number (10 to 14 digits).";
+            //    cPhoneX91.style.borderColor = "#dc2626";
+            //      isValidX91 = false;
+            // }
 
             //  if (cAreaX91.value.trim() !== "" && !/^[\p{L}\p{N}][\p{L}\p{N}\s,.'()/-]{1,99}$/u.test(cAreaX91.value.trim())) {
             //      cAreaErrX91.textContent = "Please enter a valid area or city (minimum 2 characters).";
@@ -278,9 +278,9 @@ if (
             });
         });
 
-        cPhoneX91.addEventListener("input", function() {
-            cPhoneX91.value = cPhoneX91.value.replace(/\D/g, "").slice(0, 10);
-        });
+        // cPhoneX91.addEventListener("input", function() {
+        //     cPhoneX91.value = cPhoneX91.value.replace(/\D/g, "").slice(0, 10);
+        // });
 
         cPincodeX91.addEventListener("input", function() {
             cPincodeX91.value = cPincodeX91.value.replace(/\D/g, "").slice(0, 6);
