@@ -39,20 +39,20 @@ if (
         $enqErrorsX91[] = 'Please enter a valid name.';
     }
 
-    // Indian mobile number validation
-    if (!preg_match('/^[6-9][0-9]{9}$/', $enqPhoneX91)) {
-        $enqErrorsX91[] = 'Please enter a valid 10-digit mobile number.';
-    }
+    // Mobile number validation (10 to 14 digits)
+    // if (!preg_match('/^[0-9]{10,14}$/', $enqPhoneX91)) {
+    //     $enqErrorsX91[] = 'Please enter a valid mobile number (10 to 14 digits).';
+    // }
 
     // Area validation
-    if ($enqAreaX91 !== '' && mb_strlen($enqAreaX91) > 100) {
-        $enqErrorsX91[] = 'Please enter a valid area or city.';
-    }
+    // if ($enqAreaX91 !== '' && mb_strlen($enqAreaX91) > 100) {
+    //     $enqErrorsX91[] = 'Please enter a valid area or city.';
+    // }
 
     // Pincode validation
-    if ($enqPincodeX91 !== '' && !preg_match('/^[1-9][0-9]{5}$/', $enqPincodeX91)) {
-        $enqErrorsX91[] = 'Please enter a valid 6-digit pincode.';
-    }
+    // if ($enqPincodeX91 !== '' && !preg_match('/^[1-9][0-9]{5}$/', $enqPincodeX91)) {
+    //     $enqErrorsX91[] = 'Please enter a valid 6-digit pincode.';
+    // }
 
     // Send email only if validation passes
     if (empty($enqErrorsX91)) {
@@ -250,11 +250,11 @@ if (
                 nameX91.style.borderColor = "#dc2626";
                 isValidX91 = false;
             }
-            if (!/^\d{10,14}$/.test(phoneValueX91)) {
-                phoneErrorX91.textContent = "Enter a valid mobile number (10 to 14 digits).";
-                phoneX91.style.borderColor = "#dc2626";
-                isValidX91 = false;
-            }
+            // if (!/^\d{10,14}$/.test(phoneValueX91)) {
+            //     phoneErrorX91.textContent = "Enter a valid mobile number (10 to 14 digits).";
+            //     phoneX91.style.borderColor = "#dc2626";
+            //     isValidX91 = false;
+            // }
 
             //  if (areaValueX91 !== "" && !/^[\p{L}\p{N}][\p{L}\p{N}\s,.'()/-]{1,99}$/u.test(areaValueX91)) {
             //      areaErrorX91.textContent = "Please enter a valid area or city (minimum 2 characters).";
@@ -293,7 +293,7 @@ if (
         });
 
         phoneX91.addEventListener("input", function() {
-            phoneX91.value = phoneX91.value.replace(/\D/g, "").slice(0, 10);
+            phoneX91.value = phoneX91.value.replace(/\D/g, "").slice(0, 14);
         });
 
         pincodeX91.addEventListener("input", function() {
