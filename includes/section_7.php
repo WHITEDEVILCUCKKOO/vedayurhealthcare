@@ -165,7 +165,7 @@ if (
 
             <div class="field">
                 <label for="contactPhone">Number <span class="required-star">*</span></label>
-                <input type="tel" id="contactPhone" name="phone" inputmode="numeric" maxlength="14"
+                <input type="tel" id="contactPhone" name="phone" inputmode="numeric" maxlength="16"
                     placeholder="Your Phone Number" autocomplete="tel" required
                     value="<?= htmlspecialchars($conPhoneX91, ENT_QUOTES, 'UTF-8') ?>">
                 <small class="contact-error" id="contactPhoneError"></small>
