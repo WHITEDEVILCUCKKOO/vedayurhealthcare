@@ -120,14 +120,14 @@ function enqSendMailX91($toEmail, $subject, $body)
 
 
 /* ------------------------------------------------------------------
-   10 MINUTE COOLDOWN (cookie based)
-   Koi bhi ek form submit hone ke baad dono forms 10 min ke liye band.
+   10 DIN KA COOLDOWN (cookie based)
+   Koi bhi ek form submit hone ke baad dono forms 10 din ke liye band.
 ------------------------------------------------------------------- */
-const ENQ_COOLDOWN_SECONDS_X91 = 600;       // 10 minutes
+const ENQ_COOLDOWN_SECONDS_X91 = 864000;    // 10 din = 10 x 24 x 60 x 60
 const ENQ_LOCK_COOKIE_X91      = 'vh_form_lock';
 
 // Server check: cookie maujood hai matlab abhi lock chal raha hai
-// (cookie 10 min baad browser khud delete kar deta hai)
+// (cookie 10 din baad browser khud delete kar deta hai)
 function enqCooldownActiveX91()
 {
     return isset($_COOKIE[ENQ_LOCK_COOKIE_X91])
@@ -167,11 +167,24 @@ function enqLockScriptX91()
             return exp > Date.now() ? exp : 0;
         }
 
+        // Bacha hua time: "9 days 23:59:59" format me
         function fmt(ms) {
             var s = Math.ceil(ms / 1000);
-            var mm = Math.floor(s / 60);
-            var ss = s % 60;
-            return mm + ":" + (ss < 10 ? "0" : "") + ss;
+            var d = Math.floor(s / 86400);
+            s = s % 86400;
+            var h = Math.floor(s / 3600);
+            s = s % 3600;
+            var m = Math.floor(s / 60);
+            s = s % 60;
+
+            function p(n) { return n < 10 ? "0" + n : "" + n; }
+
+            var out = "";
+            if (d > 0) {
+                out += d + (d === 1 ? " day " : " days ");
+            }
+            out += p(h) + ":" + p(m) + ":" + p(s);
+            return out;
         }
 
         function init() {
@@ -194,7 +207,7 @@ function enqLockScriptX91()
                         btn.style.cursor = "not-allowed";
                         note.style.display = "block";
                         note.textContent = "Your details were already submitted. You can send another request in " +
-                            fmt(end - Date.now()) + " (minutes).";
+                            fmt(end - Date.now()) + ".";
                     } else {
                         btn.disabled = false;
                         btn.style.opacity = "";
